@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Free Word Counter - Word Tools</title>
+
+    <meta name="description"
+          content="Count words, characters, and sentences instantly with our free online word counter.">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 20px 8%;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #273c75;
+            font-size: 26px;
+        }
+
+        header p {
+            margin-bottom: 0;
+            color: #666;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .tool-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #273c75;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #4b6cb7;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .stat {
+            background: #f1f4fa;
+            padding: 18px 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 25px;
+            color: #273c75;
+            margin-bottom: 5px;
+        }
+
+        .stat span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .primary {
+            background: #273c75;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        .info {
+            margin-top: 35px;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                margin: 20px auto;
+                padding: 12px;
+            }
+
+            .tool-box {
+                padding: 18px;
+            }
+
+            .stats {
+                gap: 6px;
+            }
+
+            .stat strong {
+                font-size: 20px;
+            }
+
+            header {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Word Tools</h1>
+    <p>Free online tools for your everyday text needs.</p>
+</header>
+
+<main>
+
+    <section class="tool-box">
+
+        <h2>Free Word Counter</h2>
+
+        <p>
+            Enter or paste your text below to count words,
+            characters, and sentences instantly.
+        </p>
+
+        <textarea
+            id="textInput"
+            placeholder="Start typing or paste your text here..."
+            aria-label="Enter text to count">
+        </textarea>
+
+        <div class="stats">
+
+            <div class="stat">
+                <strong id="wordCount">0</strong>
+                <span>Words</span>
+            </div>
+
+            <div class="stat">
+                <strong id="charCount">0</strong>
+                <span>Characters</span>
+            </div>
+
+            <div class="stat">
+                <strong id="sentenceCount">0</strong>
+                <span>Sentences</span>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+
+            <button class="primary" id="copyButton">
+                Copy Text
+            </button>
+
+            <button class="secondary" id="clearButton">
+                Clear Text
+            </button>
+
+        </div>
+
+        <p id="message" aria-live="polite"></p>
+
+    </section>
+
+    <section class="info">
+
+        <h2>What is a Word Counter?</h2>
+
+        <p>
+            A word counter is a simple online tool that helps
+            you count the number of words in your text.
+            It can be useful for writing articles, essays,
+            blog posts, emails, and other documents.
+        </p>
+
+        <h2>How to Use This Word Counter</h2>
+
+        <p>
+            Paste your text into the box above.
+            The tool will automatically calculate the
+            number of words, characters, and sentences.
+            You can copy your text or clear the box
+            whenever you want.
+        </p>
+
+    </section>
+
+</main>
+
+<footer>
+    <p>Word Tools | Free Online Text Tools</p>
+</footer>
+
+<script>
+
+    const textInput = document.getElementById("textInput");
+
+    const wordCount = document.getElementById("wordCount");
+
+    const charCount = document.getElementById("charCount");
+
+    const sentenceCount = document.getElementById("sentenceCount");
+
+    const message = document.getElementById("message");
+
+    function countText() {
+
+        const text = textInput.value;
+
+        const trimmedText = text.trim();
+
+        const words = trimmedText
+            ? trimmedText.split(/\s+/).filter(Boolean)
+            : [];
+
+        const sentences = trimmedText
+            ? trimmedText.split(/[.!?]+/).filter(s => s.trim())
+            : [];
+
+        wordCount.textContent = words.length;
+
+        charCount.textContent = text.length;
+
+        sentenceCount.textContent = sentences.length;
+
+        message.textContent = "";
+
+    }
+
+    textInput.addEventListener("input", countText);
+
+    document.getElementById("clearButton")
+        .addEventListener("click", function() {
+
+            textInput.value = "";
+
+            countText();
+
+            message.textContent = "Text cleared.";
+
+        });
+
+    document.getElementById("copyButton")
+        .addEventListener("click", async function() {
+
+            if (!textInput.value) {
+
+                message.textContent = "Please enter some text first.";
+
+                return;
+
+            }
+
+            try {
+
+                await navigator.clipboard.writeText(textInput.value);
+
+                message.textContent = "Text copied successfully!";
+
+            } catch (error) {
+
+                message.textContent =
+                    "Copy was blocked. Please select and copy the text manually.";
+
+            }
+
+        });
+
+</script>
+
+</body>
+</html>
