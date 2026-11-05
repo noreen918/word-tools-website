@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free Word Density Checker. Analyze keyword frequency and density in your text instantly.">
+<title>Free Word Density Checker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f8fafc;color:#1e293b}
+.container{max-width:1000px;margin:45px auto;padding:20px}
+header{text-align:center;margin-bottom:30px}
+h1{font-size:32px;color:#172554;margin-bottom:10px}
+header p{color:#64748b;line-height:1.6}
+.panel{background:white;padding:25px;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.06);margin-bottom:22px}
+label{display:block;font-weight:600;margin-bottom:10px}
+textarea,input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px;font-family:Arial}
+textarea{min-height:190px;resize:vertical;line-height:1.6}
+input:focus,textarea:focus{outline:2px solid #93c5fd;border-color:#3b82f6}
+.keyword-area{margin-top:20px}
+.checkbox{display:flex;align-items:center;gap:9px;margin-top:18px;color:#475569}
+.checkbox input{width:auto}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+button{border:0;padding:12px 20px;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer}
+.primary{background:#2563eb;color:white}
+.secondary{background:#e2e8f0;color:#1e293b}
+button:hover{opacity:.88}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px}
+.stat{background:#eff6ff;padding:20px;border-radius:10px;text-align:center}
+.stat strong{display:block;font-size:27px;color:#1d4ed8;margin-bottom:6px}
+.stat span{font-size:13px;color:#475569}
+.result-title{margin:0 0 15px;font-size:21px}
+.target-result{background:#f1f5f9;padding:16px;border-radius:8px;margin-bottom:20px;line-height:1.8}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:left}
+th,td{padding:13px;border-bottom:1px solid #e2e8f0}
+th{background:#f8fafc;color:#334155;font-size:14px}
+td{font-size:14px}
+.search{margin-bottom:15px}
+.note{font-size:13px;color:#64748b;line-height:1.6;margin-top:16px}
+.empty{text-align:center;padding:25px;color:#64748b}
+@media(max-width:600px){
+.container{margin:20px auto;padding:14px}
+h1{font-size:26px}
+.panel{padding:18px}
+.stats{grid-template-columns:1fr}
+.buttons button{flex:1}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<h1>Word Density Checker</h1>
+<p>Check keyword frequency and density in your content with this free online tool.</p>
+</header>
+
+<section class="panel">
+<label for="textInput">Paste Your Text</label>
+<textarea id="textInput" placeholder="Paste your article or website content here..."></textarea>
+
+<div class="keyword-area">
+<label for="targetKeyword">Check a Specific Keyword or Phrase (Optional)</label>
+<input id="targetKeyword" type="text" placeholder="Example: digital marketing">
+</div>
+
+<label class="checkbox">
+<input type="checkbox" id="excludeCommon" checked>
+Exclude common English words
+</label>
+
+<div class="buttons">
+<button class="primary" id="analyzeBtn">Analyze Text</button>
+<button class="secondary" id="copyBtn">Copy Results</button>
+<button class="secondary" id="clearBtn">Clear Text</button>
+</div>
+</section>
+
+<div id="results" hidden>
+<div class="stats">
+<div class="stat"><strong id="totalWords">0</strong><span>Total Words</span></div>
+<div class="stat"><strong id="uniqueWords">0</strong><span>Unique Words</span></div>
+<div class="stat"><strong id="totalKeywords">0</strong><span>Keywords Analyzed</span></div>
+</div>
+
+<section class="panel">
+<h2 class="result-title">Keyword Analysis</h2>
+<div class="target-result" id="targetResult">
+Enter a keyword above to check its density.
+</div>
+
+<label for="searchInput">Search Keywords</label>
+<input class="search" id="searchInput" type="text" placeholder="Search a word...">
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Frequency</th>
+<th>Density</th>
+</tr>
+</thead>
+<tbody id="resultBody"></tbody>
+</table>
+</div>
+<p class="note">Keyword density = (keyword occurrences ÷ total words) × 100. This is a basic content analysis tool, not a Google ranking score.</p>
+</section>
+</div>
+
+</div>
+
+<script>
+const textInput = document.getElementById("textInput");
+const targetKeyword = document.getElementById("targetKeyword");
+const excludeCommon = document.getElementById("excludeCommon");
+const results = document.getElementById("results");
+const resultBody = document.getElementById("resultBody");
+const searchInput = document.getElementById("searchInput");
+
+const commonWords = new Set((
+"a an the and or but if then else when at by for from in into of on onto to up with as is am are was were be been being " +
+"it its this that these those i me my we our you your he she they them his her their who what which where how why not no " +
+"do does did doing have has had having can could will would shall should may might must about above after again against " +
+"all any because before between both each few more most other some such than too very also so just"
+).split(/\s+/));
+
+let currentRows = [];
+let currentTotal = 0;
+let currentUnique = 0;
+
+function getWords(text) {
+return text.toLowerCase().match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu) || [];
+}
+
+function countPhrase(words, phrase) {
+const phraseWords = getWords(phrase);
+if (!phraseWords.length || phraseWords.length > words.length) return 0;
+
+let count = 0;
+for (let i = 0; i <= words.length - phraseWords.length; i++) {
+if (phraseWords.every((word, j) => words[i + j] === word)) count++;
+}
+return count;
+}
+
+function analyzeText() {
+const words = getWords(textInput.value);
+
+if (!words.length) {
+alert("Please paste some text before analyzing.");
+return;
+}
+
+currentTotal = words.length;
+currentUnique = new Set(words).size;
+
+const counts = new Map();
+words.forEach(word => {
+if (!excludeCommon.checked || !commonWords.has(word)) {
+counts.set(word, (counts.get(word) || 0) + 1);
+}
+});
+
+currentRows = Array.from(counts.entries())
+.map(([word, count]) => ({
+word,
+count,
+density: (count / currentTotal) * 100
+}))
+.sort((a, b) => b.count - a.count || a.word.localeCompare(b.word));
+
+document.getElementById("totalWords").textContent = currentTotal.toLocaleString();
+document.getElementById("uniqueWords").textContent = currentUnique.toLocaleString();
+document.getElementById("totalKeywords").textContent = currentRows.length.toLocaleString();
+
+const phrase = targetKeyword.value.trim();
+const targetResult = document.getElementById("targetResult");
+
+if (phrase) {
+const count = countPhrase(words, phrase);
+const density = (count / currentTotal) * 100;
+targetResult.innerHTML =
+"<strong>" + escapeHTML(phrase) + "</strong><br>" +
+"Occurrences: " + count + "<br>" +
+"Keyword density: " + density.toFixed(2) + "%";
+} else {
+targetResult.textContent = "Enter a keyword above to check its density.";
+}
+
+searchInput.value = "";
+displayRows();
+results.hidden = false;
+}
+
+function displayRows() {
+const search = searchInput.value.toLowerCase().trim();
+const filtered = currentRows.filter(row => row.word.includes(search));
+
+if (!filtered.length) {
+resultBody.innerHTML = '<tr><td colspan="3" class="empty">No matching keywords found.</td></tr>';
+return;
+}
+
+resultBody.innerHTML = filtered.map(row =>
+"<tr><td>" + escapeHTML(row.word) + "</td><td>" +
+row.count + "</td><td>" + row.density.toFixed(2) + "%</td></tr>"
+).join("");
+}
+
+function escapeHTML(value) {
+return value.replace(/[&<>"']/g, char => ({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[char]);
+}
+
+document.getElementById("analyzeBtn").addEventListener("click", analyzeText);
+searchInput.addEventListener("input", displayRows);
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+textInput.value = "";
+targetKeyword.value = "";
+searchInput.value = "";
+results.hidden = true;
+currentRows = [];
+currentTotal = 0;
+currentUnique = 0;
+});
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+if (!currentTotal) {
+alert("Please analyze some text first.");
+return;
+}
+
+const lines = [
+"Keyword,Frequency,Density",
+...currentRows.map(row =>
+'"' + row.word.replace(/"/g, '""') + '",' +
+row.count + "," + row.density.toFixed(2) + "%"
+)
+];
+
+const phrase = targetKeyword.value.trim();
+if (phrase) {
+const count = countPhrase(getWords(textInput.value), phrase);
+lines.push("");
+lines.push("Target keyword: " + phrase);
+lines.push("Occurrences: " + count);
+lines.push("Density: " + ((count / currentTotal) * 100).toFixed(2) + "%");
+}
+
+try {
+await navigator.clipboard.writeText(lines.join("\n"));
+alert("Results copied successfully!");
+} catch (error) {
+alert("Copy was not available. Please try again using your browser's secure connection.");
+}
+});
+</script>
+</body>
+</html>
