@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free online Character Counter. Count characters with and without spaces, words, sentences, and paragraphs instantly.">
+<title>Free Character Counter - Word Tools</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+header {
+    text-align: center;
+    padding: 35px 15px 20px;
+}
+
+h1 {
+    color: #172554;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 15px auto 40px;
+    padding: 20px;
+}
+
+.panel {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 250px;
+    padding: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: 2px solid #2563eb;
+    border-color: #2563eb;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.stat {
+    background: #eff6ff;
+    padding: 20px 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stat h2 {
+    color: #2563eb;
+    font-size: 28px;
+    margin: 0 0 8px;
+}
+
+.stat p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.copy {
+    background: #2563eb;
+    color: white;
+}
+
+.clear {
+    background: #e2e8f0;
+    color: #172554;
+}
+
+button:hover {
+    opacity: 0.88;
+}
+
+#message {
+    color: #15803d;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.back {
+    text-align: center;
+    margin: 35px 0;
+}
+
+.back a {
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Free Character Counter</h1>
+    <p>Count characters, words, sentences, and paragraphs instantly with this free online tool.</p>
+</header>
+
+<main class="container">
+    <section class="panel">
+
+        <label for="textInput">Enter or Paste Your Text</label>
+
+        <textarea id="textInput" placeholder="Start typing or paste your text here..."></textarea>
+
+        <div class="stats">
+
+            <div class="stat">
+                <h2 id="characters">0</h2>
+                <p>Characters (with spaces)</p>
+            </div>
+
+            <div class="stat">
+                <h2 id="noSpaces">0</h2>
+                <p>Characters (without spaces)</p>
+            </div>
+
+            <div class="stat">
+                <h2 id="words">0</h2>
+                <p>Words</p>
+            </div>
+
+            <div class="stat">
+                <h2 id="sentences">0</h2>
+                <p>Sentences</p>
+            </div>
+
+            <div class="stat">
+                <h2 id="paragraphs">0</h2>
+                <p>Paragraphs</p>
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button class="copy" id="copyBtn">Copy Text</button>
+            <button class="clear" id="clearBtn">Clear Text</button>
+        </div>
+
+        <p id="message" role="status" aria-live="polite"></p>
+
+    </section>
+
+    <div class="back">
+        <a href="index.html">← Back to Free Word Counter</a>
+    </div>
+</main>
+
+<script>
+const textInput = document.getElementById("textInput");
+
+function updateCounts() {
+    const text = textInput.value;
+
+    const wordList = text.match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu) || [];
+
+    const sentenceList = text.trim()
+        ? text.trim().split(/[.!?]+/).filter(s => s.trim().length > 0)
+        : [];
+
+    const paragraphList = text.trim()
+        ? text.trim().split(/\n\s*\n/).filter(p => p.trim().length > 0)
+        : [];
+
+    document.getElementById("characters").textContent = text.length;
+    document.getElementById("noSpaces").textContent = text.replace(/\s/g, "").length;
+    document.getElementById("words").textContent = wordList.length;
+    document.getElementById("sentences").textContent = sentenceList.length;
+    document.getElementById("paragraphs").textContent = paragraphList.length;
+}
+
+textInput.addEventListener("input", updateCounts);
+
+document.getElementById("copyBtn").addEventListener("click", async function() {
+    if (!textInput.value) {
+        document.getElementById("message").textContent = "Please enter some text first.";
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(textInput.value);
+        document.getElementById("message").textContent = "Text copied successfully!";
+    } catch (error) {
+        document.getElementById("message").textContent = "Copy unavailable. Please select and copy the text manually.";
+    }
+});
+
+document.getElementById("clearBtn").addEventListener("click", function() {
+    textInput.value = "";
+    updateCounts();
+    document.getElementById("message").textContent = "";
+});
+
+updateCounts();
+</script>
+
+</body>
+</html>
