@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Free Meta Title and Meta Description Checker. Check character counts and preview your Google search snippet.">
+<title>Free Meta Tag Checker - Word Tools</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+.container {
+  max-width: 950px;
+  margin: 40px auto;
+  padding: 20px;
+}
+header { text-align: center; margin-bottom: 30px; }
+h1 { color: #172554; font-size: 32px; }
+header p { color: #64748b; line-height: 1.6; }
+.panel {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.06);
+  margin-bottom: 22px;
+}
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+input, textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: 16px Arial, sans-serif;
+  margin-bottom: 8px;
+}
+textarea { min-height: 110px; resize: vertical; }
+.counter {
+  text-align: right;
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+.status { font-weight: bold; }
+.good { color: #15803d; }
+.warning { color: #b45309; }
+.neutral { color: #64748b; }
+.buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+button {
+  border: 0;
+  border-radius: 7px;
+  padding: 12px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #e2e8f0;
+  color: #172554;
+}
+button.primary { background: #2563eb; color: white; }
+button:hover { opacity: .88; }
+.preview-title {
+  color: #1a0dab;
+  font-size: 20px;
+  margin-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+.preview-url { color: #188038; font-size: 14px; margin-bottom: 7px; }
+.preview-description {
+  color: #4d5156;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.note { color: #64748b; font-size: 14px; line-height: 1.6; }
+.back { text-align: center; margin: 35px 0; }
+.back a { color: #2563eb; font-weight: bold; text-decoration: none; }
+@media(max-width:600px) {
+  .container { margin: 15px auto; padding: 12px; }
+  h1 { font-size: 27px; }
+  .panel { padding: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>Meta Tag Checker</h1>
+  <p>Check your meta title and description length and preview how your page may appear in Google search results.</p>
+</header>
+
+<section class="panel">
+  <label for="metaTitle">Meta Title</label>
+  <input type="text" id="metaTitle" placeholder="Enter your SEO title here..." maxlength="300">
+  <div class="counter">
+    <span id="titleCount">0</span> characters
+    <span id="titleStatus" class="status neutral"> | Recommended: about 50–60</span>
+  </div>
+
+  <label for="metaDescription">Meta Description</label>
+  <textarea id="metaDescription" placeholder="Enter your meta description here..." maxlength="1000"></textarea>
+  <div class="counter">
+    <span id="descriptionCount">0</span> characters
+    <span id="descriptionStatus" class="status neutral"> | Recommended: about 150–160</span>
+  </div>
+
+  <div class="buttons">
+    <button class="primary" id="copyButton">Copy Meta Tags</button>
+    <button id="clearButton">Clear</button>
+  </div>
+  <p id="message" class="note" aria-live="polite"></p>
+</section>
+
+<section class="panel">
+  <h2>Google Search Preview</h2>
+  <p class="note">This is an approximate preview. Google may display a different title or description.</p>
+  <div class="preview-url">https://www.example.com/your-page</div>
+  <div class="preview-title" id="previewTitle">Your Meta Title Will Appear Here</div>
+  <div class="preview-description" id="previewDescription">Your meta description will appear here. Write a clear and useful summary of your page.</div>
+</section>
+
+<div class="back">
+  <a href="index.html">← Back to Free Word Counter</a>
+</div>
+</div>
+
+<script>
+const titleInput = document.getElementById("metaTitle");
+const descriptionInput = document.getElementById("metaDescription");
+
+function updatePreview() {
+  const title = titleInput.value;
+  const description = descriptionInput.value;
+
+  document.getElementById("titleCount").textContent = title.length;
+  document.getElementById("descriptionCount").textContent = description.length;
+
+  const titleStatus = document.getElementById("titleStatus");
+  const descriptionStatus = document.getElementById("descriptionStatus");
+
+  titleStatus.textContent = title.length === 0
+    ? " | Recommended: about 50–60"
+    : title.length < 50 ? " | Shorter than the suggested range"
+    : title.length <= 60 ? " | Within the suggested range"
+    : " | Longer than the suggested range";
+
+  titleStatus.className = "status " +
+    (title.length === 0 ? "neutral" : title.length <= 60 && title.length >= 50 ? "good" : "warning");
+
+  descriptionStatus.textContent = description.length === 0
+    ? " | Recommended: about 150–160"
+    : description.length < 150 ? " | Shorter than the suggested range"
+    : description.length <= 160 ? " | Within the suggested range"
+    : " | Longer than the suggested range";
+
+  descriptionStatus.className = "status " +
+    (description.length === 0 ? "neutral" : description.length <= 160 && description.length >= 150 ? "good" : "warning");
+
+  document.getElementById("previewTitle").textContent =
+    title || "Your Meta Title Will Appear Here";
+
+  document.getElementById("previewDescription").textContent =
+    description || "Your meta description will appear here. Write a clear and useful summary of your page.";
+}
+
+titleInput.addEventListener("input", updatePreview);
+descriptionInput.addEventListener("input", updatePreview);
+
+document.getElementById("clearButton").addEventListener("click", function() {
+  titleInput.value = "";
+  descriptionInput.value = "";
+  document.getElementById("message").textContent = "";
+  updatePreview();
+});
+
+document.getElementById("copyButton").addEventListener("click", async function() {
+  const title = titleInput.value.trim();
+  const description = descriptionInput.value.trim();
+
+  if (!title && !description) {
+    document.getElementById("message").textContent = "Please enter a title or description first.";
+    return;
+  }
+
+  const tags =
+    (title ? '<title>' + title + '</title>\n' : "") +
+    (description ? '<meta name="description" content="' + description.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;") + '">' : "");
+
+  try {
+    await navigator.clipboard.writeText(tags);
+    document.getElementById("message").textContent = "Meta tags copied successfully!";
+  } catch (error) {
+    document.getElementById("message").textContent = "Copy was blocked by your browser. Please try again.";
+  }
+});
+
+updatePreview();
+</script>
+</body>
+</html>
