@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Case Converter - Word Tools</title>
+<meta name="description" content="Convert text to uppercase, lowercase, sentence case, title case and more with this free online case converter.">
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #172b4d;
+}
+header {
+    background: white;
+    padding: 22px 8%;
+    border-bottom: 1px solid #e1e6ef;
+}
+header h1 { margin: 0 0 8px; color: #24477c; }
+header p { margin: 0; color: #64748b; }
+.container {
+    max-width: 950px;
+    margin: 45px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(0,0,0,.06);
+}
+h2 { color: #24477c; margin-top: 0; }
+label {
+    display: block;
+    font-weight: bold;
+    margin: 20px 0 10px;
+}
+textarea {
+    width: 100%;
+    min-height: 230px;
+    padding: 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    font-size: 16px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+}
+textarea:focus {
+    outline: 2px solid #3b82f6;
+    border-color: #3b82f6;
+}
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+button {
+    border: none;
+    border-radius: 7px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #2563eb;
+    color: white;
+}
+button:hover { opacity: .88; }
+.secondary { background: #e2e8f0; color: #172b4d; }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 22px;
+}
+.stat {
+    background: #eff6ff;
+    padding: 18px 10px;
+    text-align: center;
+    border-radius: 9px;
+}
+.stat strong {
+    display: block;
+    font-size: 25px;
+    color: #2563eb;
+    margin-bottom: 6px;
+}
+.stat span { font-size: 13px; }
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+footer a {
+    display: inline-block;
+    margin: 8px;
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+}
+@media(max-width:600px) {
+    .container { margin: 20px 12px; padding: 20px; }
+    .stats { grid-template-columns: 1fr; }
+    button { flex: 1 1 40%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Word Tools</h1>
+    <p>Free online tools for your everyday text needs.</p>
+</header>
+
+<main class="container">
+    <h2>Free Case Converter</h2>
+    <p>Convert your text into uppercase, lowercase, sentence case, title case and more.</p>
+
+    <label for="textInput">Enter or Paste Your Text</label>
+    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+
+    <div class="buttons">
+        <button onclick="convertText('upper')">UPPERCASE</button>
+        <button onclick="convertText('lower')">lowercase</button>
+        <button onclick="convertText('sentence')">Sentence case</button>
+        <button onclick="convertText('title')">Title Case</button>
+        <button onclick="convertText('capitalized')">Capitalized Case</button>
+    </div>
+
+    <div class="buttons">
+        <button onclick="copyText()">Copy Text</button>
+        <button class="secondary" onclick="clearText()">Clear Text</button>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <strong id="wordCount">0</strong>
+            <span>Words</span>
+        </div>
+        <div class="stat">
+            <strong id="charCount">0</strong>
+            <span>Characters</span>
+        </div>
+        <div class="stat">
+            <strong id="sentenceCount">0</strong>
+            <span>Sentences</span>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>Word Tools | Free Online Text Tools</p>
+    <a href="index.html">Back to Free Word Counter</a>
+    <a href="word-density-checker.html">Word Density Checker</a>
+</footer>
+
+<script>
+const textInput = document.getElementById("textInput");
+
+function updateCounts() {
+    const text = textInput.value;
+    const words = text.trim() ? text.trim().match(/\S+/g) : [];
+    const sentences = text.match(/[.!?]+(?=\s|$)/g) || [];
+
+    document.getElementById("wordCount").textContent = words.length;
+    document.getElementById("charCount").textContent = text.length;
+    document.getElementById("sentenceCount").textContent = sentences.length;
+}
+
+function convertText(type) {
+    let text = textInput.value;
+
+    if (type === "upper") {
+        text = text.toUpperCase();
+    } else if (type === "lower") {
+        text = text.toLowerCase();
+    } else if (type === "sentence") {
+        text = text.toLowerCase().replace(
+            /(^\s*[a-z]|[.!?]\s+[a-z])/g,
+            match => match.toUpperCase()
+        );
+    } else if (type === "title") {
+        text = text.toLowerCase().replace(
+            /\b[a-z]/g,
+            match => match.toUpperCase()
+        );
+    } else if (type === "capitalized") {
+        text = text.toLowerCase().replace(
+            /(^|\s)[a-z]/g,
+            match => match.toUpperCase()
+        );
+    }
+
+    textInput.value = text;
+    updateCounts();
+}
+
+async function copyText() {
+    if (!textInput.value) {
+        alert("Please enter some text first.");
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(textInput.value);
+        alert("Text copied successfully!");
+    } catch (error) {
+        textInput.select();
+        alert("Please press Ctrl+C to copy the selected text.");
+    }
+}
+
+function clearText() {
+    textInput.value = "";
+    updateCounts();
+}
+
+textInput.addEventListener("input", updateCounts);
+updateCounts();
+</script>
+
+</body>
+</html>
