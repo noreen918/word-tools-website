@@ -171,13 +171,57 @@ button:hover {
 </head>
 
 <body>
-<nav style="background:#243b6b; padding:15px; text-align:center; display:flex; flex-wrap:wrap; justify-content:center; gap:15px;">
-  <a href="index.html" style="color:white; text-decoration:none;">Home</a>
-  <a href="character-counter.html" style="color:white; text-decoration:none;">Character Counter</a>
-  <a href="word-density-checker.html" style="color:white; text-decoration:none;">Word Density Checker</a>
-  <a href="case-converter.html" style="color:white; text-decoration:none;">Case Converter</a>
-  <a href="meta-tag-checker.html" style="color:white; text-decoration:none;">Meta Tag Checker</a>
+<style>
+  .site-nav {
+    background: #243b6b;
+    padding: 14px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .site-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: background 0.2s ease;
+  }
+
+  .site-nav a:hover {
+    background: #40598b;
+  }
+
+  .site-nav a.active {
+    background: white;
+    color: #243b6b;
+    font-weight: bold;
+  }
+
+  @media (max-width: 600px) {
+    .site-nav {
+      gap: 6px;
+      padding: 10px 6px;
+    }
+
+    .site-nav a {
+      font-size: 13px;
+      padding: 9px 10px;
+    }
+  }
+</style>
+
+<nav class="site-nav">
+  <a href="index.html">Home</a>
+  <a href="character-counter.html">Character Counter</a>
+  <a href="word-density-checker.html">Word Density Checker</a>
+  <a href="case-converter.html">Case Converter</a>
+  <a href="meta-tag-checker.html">Meta Tag Checker</a>
 </nav>
+
 <header>
     <h1>Free Character Counter</h1>
     <p>Count characters, words, sentences, and paragraphs instantly with this free online tool.</p>
